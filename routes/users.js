@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 
-require("../models/connection");
+require("../models/connection.js");
 
 const User = require("../models/users.js");
 const { checkBody } = require("../modules/checkBody");
@@ -9,7 +9,7 @@ const uid2 = require("uid2");
 const bcrypt = require("bcrypt");
 
 router.post("/signup", (req, res) => {
-  if (!checkBody(req.body, ["fisrname", "username", "password"])) {
+  if (!checkBody(req.body, ["firstname", "username", "password"])) {
     res.json({ result: false, error: "Missing or empty fields" });
     return;
   }
