@@ -7,6 +7,7 @@ const tweetSchema = mongoose.Schema({
     maxlength: [250, "Le contenu ne peut pas dépasser 250 caractères"],
   },
   user: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
+  likes: Number,
 });
 
 const Tweet = mongoose.model("tweets", tweetSchema);
