@@ -8,7 +8,7 @@ const Tweet = require("../models/tweets")
 router.post("/", async(req, res) => {
     // check if body is correct
     if (!checkBody(req.body, ["token", "content"])) {
-        res.status(400).json({result: false, error: "Bad request"})
+        res.json({result: false, error: "Bad request"})
         return
     }
 
@@ -24,7 +24,7 @@ router.post("/", async(req, res) => {
         // get user in database to retrieve user._id
         const user = await User.findOne( { token } )
         if (!user) {
-            res.status(400).json({result: false, error: "Could not retrieve user"})
+            res.status.json({result: false, error: "Could not retrieve user"})
             return
         }
         
@@ -36,13 +36,13 @@ router.post("/", async(req, res) => {
         })
 
         if (!newTweet) {
-            res.status(400).json({result: false, error: "Could not create tweet"})
+            res.status.json({result: false, error: "Could not create tweet"})
             return
         }
 
         const savedTweet = await newTweet.save()
         if (!savedTweet) {
-            res.status(400).json({result: false, error: "Could not save tweet"})
+            res.status.json({result: false, error: "Could not save tweet"})
             return
         }
 
