@@ -17,6 +17,7 @@ router.post("/", async(req, res) => {
 
     if (content.length > 280) {
         res.json({result: false, error: "content too long"})
+        return
     }
 
     try {
