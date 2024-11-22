@@ -68,4 +68,21 @@ router.post("/", async (req, res) => {
 
 })
 
+router.get("/", async (req, res) => {
+    const hashtags = await Hashtag.find();
+    if (hashtags.left == 0) {
+        res.json({ result: false, error: "no hashtag in db"})
+        return
+    }
+
+    const hashtaglist = hashtags.map((hashtag) => {
+        return {
+            content: hashtag.content,
+            tweetsNumber: hashtag.tweets.length
+        }
+    })
+
+    res.json({ result: true, hashtags: hashtaglist })
+})
+
 module.exports = router;
