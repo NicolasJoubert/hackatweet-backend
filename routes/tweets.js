@@ -4,6 +4,8 @@ var router = express.Router();
 const { checkBody } = require("../modules/checkBody");
 const User = require("../models/users");
 const Tweet = require("../models/tweets");
+const Hashtag = require("../models/hashtags");
+
 
 router.post("/", async (req, res) => {
   // check if body is correct
@@ -45,6 +47,43 @@ router.post("/", async (req, res) => {
     if (!savedTweet) {
       res.status.json({ result: false, error: "Could not save tweet" });
       return;
+    }
+    console.log("save tweet => ", savedTweet)
+    // manage hashtag creation or update
+
+    const hashtagRegex = /#\w+/g;
+    const hashtags = content.match(hashtagRegex);
+    console.log("hashtags => ", hashtags)
+    if (hashtags) {
+      for (let hashtag of hashtags) {
+
+      const findHashtag = await Hashtag.findOne( {content: hashtag})
+      console.log("findHashtag => ", findHashtag)
+        if (!findHashtag) {
+            // create new hashtag
+            const newHashtag = new Hashtag({
+                content: hashtag,
+                tweets: [savedTweet._id]
+            })
+            const savedHashtag = await newHashtag.save()
+            if (!savedHashtag) {
+                console.log("could not save hashtag");
+            }
+
+        } else {
+            // update hashtag with new tweet
+            const updatedHashtag = await Hashtag.updateOne(
+                { content: hashtag },
+                { $push: { tweets: savedTweet._id } }
+            )
+            if (updatedHashtag.modifiedCount === 0) {
+              console.log("could not update hashtag");
+
+            }
+        }
+      }
+    } else {
+      console.log("no hashtag in tweet")
     }
 
     res.json({
