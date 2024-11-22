@@ -46,7 +46,7 @@ router.post("/", async (req, res) => {
       return;
     }
 
-    res.json({ result: true });
+    res.json({ result: true, tweet: savedTweet });
   } catch (err) {
     console.error(err);
   }
