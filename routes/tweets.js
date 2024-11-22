@@ -46,7 +46,15 @@ router.post("/", async (req, res) => {
       return;
     }
 
-    res.json({ result: true });
+    res.json({
+      result: true,
+      tweet: {
+        _id: newTweet._id,
+        createdAt: newTweet.createdAt,
+        content: newTweet.content,
+        user: { firstname: user.firstname, username: user.username },
+      },
+    });
   } catch (err) {
     console.error(err);
   }
@@ -55,6 +63,7 @@ router.post("/", async (req, res) => {
 router.get("/", (req, res) => {
   Tweet.find()
     .populate({ path: "user", select: "firstname username" })
+    .sort({ createdAt: -1 })
     .then((tweets) => {
       res.json({ result: true, tweets });
     })
