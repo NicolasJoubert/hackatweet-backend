@@ -73,7 +73,9 @@ router.post("/", async (req, res) => {
         } else {
             // update hashtag with new tweet
             const updatedHashtag = await Hashtag.updateOne(
-                { content: hashtag },
+                { content: hashtag
+                  
+                 },
                 { $push: { tweets: savedTweet._id } }
             )
             if (updatedHashtag.modifiedCount === 0) {
