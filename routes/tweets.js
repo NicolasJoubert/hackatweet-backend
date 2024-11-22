@@ -33,6 +33,7 @@ router.post("/", async (req, res) => {
       createdAt: Date.now(),
       content,
       user: user._id,
+      likes: 0,
     });
 
     if (!newTweet) {
@@ -46,7 +47,15 @@ router.post("/", async (req, res) => {
       return;
     }
 
-    res.json({ result: true, tweet: savedTweet });
+    res.json({
+      result: true,
+      tweet: {
+        _id: newTweet._id,
+        createdAt: newTweet.createdAt,
+        content: newTweet.content,
+        user: { firstname: user.firstname, username: user.username },
+      },
+    });
   } catch (err) {
     console.error(err);
   }
@@ -55,6 +64,7 @@ router.post("/", async (req, res) => {
 router.get("/", (req, res) => {
   Tweet.find()
     .populate({ path: "user", select: "firstname username" })
+    .sort({ createdAt: -1 })
     .then((tweets) => {
       res.json({ result: true, tweets });
     })
@@ -63,4 +73,43 @@ router.get("/", (req, res) => {
     });
 });
 
+router.post("/update-likes", (req, res) => {
+  const { username, content, likes } = req.body;
+
+  if (!username || !content || likes === undefined) {
+    res.json({ result: false, error: "PROUT" });
+    return;
+  }
+
+  User.findOne({ username })
+    .then((user) => {
+      if (!user) {
+        res.json({
+          result: false,
+          error: "Pas d'utilisateur tulututu chapeau pointu",
+        });
+        return null;
+      }
+
+      return Tweet.findOne({ content, user: user._id });
+    })
+    .then((tweet) => {
+      if (!tweet) {
+        res.json({ result: false, error: "Y pas de tweet pov naz" });
+        return null;
+      }
+
+      tweet.likes = (tweet.likes || 0) + Number(likes);
+      return tweet.save();
+    })
+    .then((updatedTweet) => {
+      if (updatedTweet) {
+        res.json({ result: true, tweet: updatedTweet });
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.json({ result: false, error: "TOUT KC MEC TOUCHE PLUS RIEN " });
+    });
+});
 module.exports = router;
